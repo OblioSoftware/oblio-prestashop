@@ -38,7 +38,7 @@ class Oblio extends Module
     {
         $this->name                     = 'oblio';
         $this->tab                      = 'billing_invoicing';
-        $this->version                  = '1.1.6';
+        $this->version                  = '1.1.7';
         $this->author                   = 'Oblio Software';
         $this->need_instance            = 1;
         $this->controllers              = [];
@@ -75,7 +75,8 @@ class Oblio extends Module
             $this->registerHook('actionProductSave') &&
             $this->registerHook('actionValidateOrder') &&
             $this->registerHook('actionPDFInvoiceRender') &&
-            $this->registerHook('actionOrderStatusPostUpdate') &&
+            $this->registerHook('actionOrderHistoryAddAfter') &&
+            // $this->registerHook('actionOrderStatusPostUpdate') &&
             // $this->registerHook('displayBackOfficeOrderActions') &&
             $this->registerHook($orderDetailsHookName);
     }
@@ -889,17 +890,18 @@ class Oblio extends Module
     }
     
     // generate on payment/delivered
-    public function hookActionOrderStatusPostUpdate(array $params)
+    public function hookActionOrderHistoryAddAfter(array $params)
     {
         if (!$this->active) {
             return '';
         }
-        $id_order = (int) $params['id_order'];
+        $id_order = (int) $params['order_history']->id_order;
         $generate_invoice_status_change = (bool) Configuration::get('oblio_generate_invoice_status_change');
         $oblio_generate_invoice_use_stock = (bool) Configuration::get('oblio_generate_invoice_use_stock');
+
         if (
             $generate_invoice_status_change &&
-            in_array((int)$params['newOrderStatus']->id, [2, 5]) &&
+            in_array((int)$params['order_history']->id_order_state, [2, 5]) &&
             $id_order > 0
             ) {
             $order = new Order($id_order);
