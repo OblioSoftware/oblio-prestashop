@@ -1,4 +1,4 @@
-name: packing
+name: Deploy
 
 on:
   push:
@@ -15,15 +15,14 @@ jobs:
       - shell: bash
         run: |
           ls -l
-          mkdir oblio
-          ls | grep -v oblio | xargs mv -t oblio
-          mv oblio.php oblio
+          mkdir deploy/oblio
+          ls | grep -v deploy | xargs mv -t oblio/deploy
           ls -l
 
       - name: Zip contents
         uses: vimtor/action-zip@v1
         with:
-          files: oblio
+          files: deploy
           dest: ./packaging/oblio-prestashop.zip
 
       - name: Pushes to builds repository
