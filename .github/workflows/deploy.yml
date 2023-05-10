@@ -15,7 +15,8 @@ jobs:
       - shell: bash
         run: |
           ls -l
-          mkdir -p deploy/oblio
+          mkdir deploy
+          mkdir deploy/oblio
           ls | grep -v deploy | xargs mv -t oblio/deploy
           ls -l
 
