@@ -15,9 +15,8 @@ jobs:
       - shell: bash
         run: |
           ls -l
-          mkdir deploy
-          mkdir deploy/oblio
-          ls | grep -v deploy | xargs mv -t oblio/deploy
+          mkdir -p deploy/oblio
+          ls | grep -v deploy | xargs mv -t deploy/oblio
           ls -l
 
       - name: Zip contents
