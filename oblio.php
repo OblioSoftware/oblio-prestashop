@@ -1073,7 +1073,7 @@ class Oblio extends Module
         try {
             $contact = $address->firstname . ' ' . $address->lastname;
             $cuiClient = empty($address->vat_number) ? $address->dni : $address->vat_number;
-            if ($cuiClient === 'dni') {
+            if (in_array($cuiClient, ['dni', '0'])) {
                 $cuiClient = '';
             }
             
