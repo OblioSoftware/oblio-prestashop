@@ -1137,9 +1137,8 @@ class Oblio extends Module
             );
             
             if (empty($data['referenceDocument'])) {
-                if ($order->total_discounts_tax_incl > 0) {
-                    $oblio_product_discount_included = true;
-                }
+                $hasDiscounts = false;
+				$total = 0;
                 foreach ($products as $item) {
                     if (!empty($exclude_reference) && in_array($item['product_reference'], $exclude_reference)) {
                         continue;
@@ -1188,6 +1187,7 @@ class Oblio extends Module
                         'productType'   => $productType,
                         'management'    => $management,
                     ];
+					$total += $price;
                     if (!$oblio_product_discount_included && $price !== $fullPrice) {
                         $totalOriginalPrice = $fullPrice * $item['product_quantity'];
                         $data['products'][] = [
@@ -1195,6 +1195,7 @@ class Oblio extends Module
                             'discount'      => round($totalOriginalPrice - $item['total_price_tax_incl'], $data['precision']),
                             'discountType'  => 'valoric',
                         ];
+						$hasDiscounts = true;
                     }
                 }
                 if ($order->total_shipping_tax_incl > 0) {
@@ -1211,14 +1212,49 @@ class Oblio extends Module
                         'quantity'      => 1,
                         'productType'   => 'Serviciu',
                     ];
+					$total += $order->total_shipping_tax_incl;
                 }
                 if ($order->total_discounts_tax_incl > 0) {
-                    $data['products'][] = [
-                        'name'          => 'Discount',
-                        'discount'      => $order->total_discounts_tax_incl,
-                        'discountType'  => 'valoric',
-                    ];
+					if ($hasDiscounts) {
+						$data['products'][] = [
+							'name'          => 'Transport',
+							'code'          => '',
+							'description'   => '',
+							'price'         => $order->total_discounts_tax_incl,
+							'measuringUnit' => 'buc',
+							'currency'      => $currency->iso_code,
+							// 'vatName'       => 'Normala',
+							'vatPercentage' => round($order->total_discounts_tax_incl / $order->total_discounts_tax_excl * 100) - 100,
+							'vatIncluded'   => true,
+							'quantity'      => -1,
+							'productType'   => 'Serviciu',
+						];
+					} else {
+						$data['products'][] = [
+							'name'          => 'Discount',
+							'discount'      => $order->total_discounts_tax_incl,
+							'discountType'  => 'valoric',
+						];
+					}
+					$total -= $order->total_discounts_tax_incl;
                 }
+				
+				if (number_format($total, 2, '.', '') !== number_format($order->total_paid_tax_incl, 2, '.', '')) {
+					$difference = number_format($order->total_paid_tax_incl, 2, '.', '') - number_format($total, 2, '.', '');
+					$data['products'][] = [
+						'name'          => $difference > 0 ? 'Alte taxe' : 'Discount',
+						'code'          => '',
+						'description'   => '',
+						'price'         => abs($difference),
+						'measuringUnit' => 'buc',
+						'currency'      => $currency->iso_code,
+						// 'vatName'       => 'Normala',
+						'vatPercentage' => round($order->total_paid_tax_incl / $order->total_paid_tax_excl * 100) - 100,
+						'vatIncluded'   => true,
+						'quantity'      => $difference > 0 ? 1 : -1,
+						'productType'   => 'Serviciu',
+					];
+				}
             }
             
             $api = new OblioApi($email, $secret, new OblioApiPrestashopAccessTokenHandler());
