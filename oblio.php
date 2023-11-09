@@ -1138,7 +1138,7 @@ class Oblio extends Module
             
             if (empty($data['referenceDocument'])) {
                 $hasDiscounts = false;
-				$total = 0;
+                $total = 0;
                 foreach ($products as $item) {
                     if (!empty($exclude_reference) && in_array($item['product_reference'], $exclude_reference)) {
                         continue;
@@ -1187,7 +1187,7 @@ class Oblio extends Module
                         'productType'   => $productType,
                         'management'    => $management,
                     ];
-					$total += $price;
+                    $total += $price * $item['product_quantity'];
                     if (!$oblio_product_discount_included && $price !== $fullPrice) {
                         $totalOriginalPrice = $fullPrice * $item['product_quantity'];
                         $data['products'][] = [
@@ -1195,7 +1195,7 @@ class Oblio extends Module
                             'discount'      => round($totalOriginalPrice - $item['total_price_tax_incl'], $data['precision']),
                             'discountType'  => 'valoric',
                         ];
-						$hasDiscounts = true;
+                        $hasDiscounts = true;
                     }
                 }
                 if ($order->total_shipping_tax_incl > 0) {
@@ -1212,7 +1212,7 @@ class Oblio extends Module
                         'quantity'      => 1,
                         'productType'   => 'Serviciu',
                     ];
-					$total += $order->total_shipping_tax_incl;
+                    $total += $order->total_shipping_tax_incl;
                 }
                 if ($order->total_discounts_tax_incl > 0) {
 					if ($hasDiscounts) {
