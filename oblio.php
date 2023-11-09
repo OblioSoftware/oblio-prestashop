@@ -1215,46 +1215,46 @@ class Oblio extends Module
                     $total += $order->total_shipping_tax_incl;
                 }
                 if ($order->total_discounts_tax_incl > 0) {
-					if ($hasDiscounts) {
-						$data['products'][] = [
-							'name'          => 'Transport',
-							'code'          => '',
-							'description'   => '',
-							'price'         => $order->total_discounts_tax_incl,
-							'measuringUnit' => 'buc',
-							'currency'      => $currency->iso_code,
-							// 'vatName'       => 'Normala',
-							'vatPercentage' => round($order->total_discounts_tax_incl / $order->total_discounts_tax_excl * 100) - 100,
-							'vatIncluded'   => true,
-							'quantity'      => -1,
-							'productType'   => 'Serviciu',
-						];
-					} else {
-						$data['products'][] = [
-							'name'          => 'Discount',
-							'discount'      => $order->total_discounts_tax_incl,
-							'discountType'  => 'valoric',
-						];
-					}
-					$total -= $order->total_discounts_tax_incl;
+                    if ($hasDiscounts) {
+                        $data['products'][] = [
+                            'name'          => 'Transport',
+                            'code'          => '',
+                            'description'   => '',
+                            'price'         => $order->total_discounts_tax_incl,
+                            'measuringUnit' => 'buc',
+                            'currency'      => $currency->iso_code,
+                            // 'vatName'       => 'Normala',
+                            'vatPercentage' => round($order->total_discounts_tax_incl / $order->total_discounts_tax_excl * 100) - 100,
+                            'vatIncluded'   => true,
+                            'quantity'      => -1,
+                            'productType'   => 'Serviciu',
+                        ];
+                    } else {
+                        $data['products'][] = [
+                            'name'          => 'Discount',
+                            'discount'      => $order->total_discounts_tax_incl,
+                            'discountType'  => 'valoric',
+                        ];
+                    }
+                    $total -= $order->total_discounts_tax_incl;
                 }
 				
-				if (number_format($total, 2, '.', '') !== number_format($order->total_paid_tax_incl, 2, '.', '')) {
-					$difference = number_format($order->total_paid_tax_incl, 2, '.', '') - number_format($total, 2, '.', '');
-					$data['products'][] = [
-						'name'          => $difference > 0 ? 'Alte taxe' : 'Discount',
-						'code'          => '',
-						'description'   => '',
-						'price'         => abs($difference),
-						'measuringUnit' => 'buc',
-						'currency'      => $currency->iso_code,
-						// 'vatName'       => 'Normala',
-						'vatPercentage' => round($order->total_paid_tax_incl / $order->total_paid_tax_excl * 100) - 100,
-						'vatIncluded'   => true,
-						'quantity'      => $difference > 0 ? 1 : -1,
-						'productType'   => 'Serviciu',
-					];
-				}
+                if (number_format($total, 2, '.', '') !== number_format($order->total_paid_tax_incl, 2, '.', '')) {
+                    $difference = number_format($order->total_paid_tax_incl, 2, '.', '') - number_format($total, 2, '.', '');
+                    $data['products'][] = [
+                        'name'          => $difference > 0 ? 'Alte taxe' : 'Discount',
+                        'code'          => '',
+                        'description'   => '',
+                        'price'         => abs($difference),
+                        'measuringUnit' => 'buc',
+                        'currency'      => $currency->iso_code,
+                        // 'vatName'       => 'Normala',
+                        'vatPercentage' => round($order->total_paid_tax_incl / $order->total_paid_tax_excl * 100) - 100,
+                        'vatIncluded'   => true,
+                        'quantity'      => $difference > 0 ? 1 : -1,
+                        'productType'   => 'Serviciu',
+                    ];
+                }
             }
             
             $api = new OblioApi($email, $secret, new OblioApiPrestashopAccessTokenHandler());
