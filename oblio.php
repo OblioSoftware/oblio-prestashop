@@ -31,6 +31,7 @@ class Oblio extends Module
         ['name' => 'Produse agricole'],
         ['name' => 'Animale si pasari'],
         ['name' => 'Ambalaje'],
+        ['name' => 'Serviciu'],
     ];
     private $_invoice_options = [];
     
@@ -1190,12 +1191,19 @@ class Oblio extends Module
                     $total += $price * $item['product_quantity'];
                     if (!$oblio_product_discount_included && $price !== $fullPrice) {
                         $totalOriginalPrice = $fullPrice * $item['product_quantity'];
-                        $data['products'][] = [
-                            'name'          => sprintf('Discount "%s"', $name),
-                            'discount'      => round($totalOriginalPrice - $item['total_price_tax_incl'], $data['precision']),
-                            'discountType'  => 'valoric',
-                        ];
-                        $hasDiscounts = true;
+                        $difference = $totalOriginalPrice - $item['total_price_tax_incl'];
+
+                        if ($difference > 0) {
+                            $data['products'][] = [
+                                'name'          => sprintf('Discount "%s"', $name),
+                                'discount'      => round($difference, $data['precision']),
+                                'discountType'  => 'valoric',
+                            ];
+                            $hasDiscounts = true;
+                        } else {
+                            $lastKey = array_key_last($data['products']);
+                            $data['products'][$lastKey]['price'] = $item['unit_price_tax_incl'];
+                        }
                     }
                 }
                 if ($order->total_shipping_tax_incl > 0) {
@@ -1217,7 +1225,7 @@ class Oblio extends Module
                 if ($order->total_discounts_tax_incl > 0) {
                     if ($hasDiscounts) {
                         $data['products'][] = [
-                            'name'          => 'Transport',
+                            'name'          => 'Discount',
                             'code'          => '',
                             'description'   => '',
                             'price'         => $order->total_discounts_tax_incl,
