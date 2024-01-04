@@ -1602,7 +1602,7 @@ class Oblio extends Module
         } else {
             $price = ($item['original_product_price'] * (1 + $item['tax_rate'] / 100));
         }
-        return number_format($price, 6, '.', '');
+        return number_format($price, 4, '.', '');
     }
 }
 
