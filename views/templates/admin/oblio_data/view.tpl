@@ -20,7 +20,7 @@
 </div>
 
 <div class="panel">
-    <div class="panel-heading">Generare cuduri de referinta automate</div>
+    <div class="panel-heading">Generare coduri de referinta automate</div>
     <a id="oblio_generate_reference" class="btn btn-default" href="">
       <i class="icon-file"></i>
       Generare coduri de referinta
@@ -29,7 +29,7 @@
 
 <div class="panel">
     <div class="panel-heading">Export stoc initial csv</div>
-    <a id="oblio_export" class="btn btn-default" href="{$link->getAdminLink('AdminOblioData')|escape:'UTF-8'}&amp;action=ajax&amp;type=export">
+    <a id="oblio_export" class="btn btn-default" href="{$link->getAdminLink('AdminOblioData')}&amp;action=ajax&amp;type=export">
       <i class="icon-file"></i>
       Export
     </a>
@@ -37,7 +37,7 @@
 
 <script type="text/javascript">
 "use strict";
-var ajaxLink = "{$link->getAdminLink('AdminOblioData')|escape:'UTF-8'}&action=ajax";
+var ajaxLink = "{$link->getAdminLink('AdminOblioData')}&action=ajax";
 {literal}
 $(document).ready(function() {
     $('#oblio_update_stock').click(function(e) {
