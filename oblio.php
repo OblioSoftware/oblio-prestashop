@@ -1386,6 +1386,7 @@ class Oblio extends Module
         $secret      = Configuration::get('oblio_api_secret');
         $workstation = Configuration::get('oblio_company_workstation');
         $management  = Configuration::get('oblio_company_management');
+        $products_type = strval(Configuration::get('oblio_company_products_type'));
         
         if (!$email || !$secret || !$cui) {
             return 0;
@@ -1414,13 +1415,20 @@ class Oblio extends Module
                 ]);
                 $index = 0;
                 foreach ($products['data'] as $product) {
+                    $index++;
                     $post = $model->find($product);
+                    $productType = $post ? $this->getProductAttribute($post->id, 'type') : null;
+                    if (!$productType) {
+                        $productType = $products_type ? $products_type : 'Marfa';
+                    }
+                    if ($post && $productType !== $product['productType']) {
+                        continue;
+                    }
                     if ($post) {
                         $model->update($post->id, $product);
                     } else {
                         // $model->insert($product);
                     }
-                    $index++;
                 }
                 $offset += $limitPerPage; // next page
             } while ($index === $limitPerPage);
