@@ -1417,7 +1417,7 @@ class Oblio extends Module
                 foreach ($products['data'] as $product) {
                     $index++;
                     $post = $model->find($product);
-                    $productType = $this->getProductAttribute($post->id, 'type');
+                    $productType = $post ? $this->getProductAttribute($post->id, 'type') : null;
                     if (!$productType) {
                         $productType = $products_type ? $products_type : 'Marfa';
                     }
