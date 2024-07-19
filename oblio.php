@@ -1239,9 +1239,10 @@ class Oblio extends Module
                         ];
                     } else {
                         $data['products'][] = [
-                            'name'          => 'Discount',
-                            'discount'      => $order->total_discounts_tax_incl,
-                            'discountType'  => 'valoric',
+                            'name'              => 'Discount',
+                            'discount'          => $order->total_discounts_tax_incl,
+                            'discountType'      => 'valoric',
+                            'discountAllAbove'  => 1
                         ];
                     }
                     $total -= $order->total_discounts_tax_incl;
