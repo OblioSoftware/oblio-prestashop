@@ -275,6 +275,7 @@ class Oblio extends Module
         $helper->fields_value['oblio_generate_proforma_new_order']      = Configuration::get('oblio_generate_proforma_new_order');
         $helper->fields_value['oblio_generate_change_state']            = Configuration::get('oblio_generate_change_state');
         $helper->fields_value['oblio_generate_email_state']             = Configuration::get('oblio_generate_email_state');
+	$helper->fields_value['oblio_stock_adjusments']                 = Configuration::get('oblio_stock_adjusments');
 
         // < init fields for form array >
         $fields_form[0]['form'] = array(
@@ -561,6 +562,27 @@ class Oblio extends Module
                                 'size' => 20,
                                 'required' => false
                             ),
+				array(
+                                'type' => 'checkbox',
+                                'label' => $this->l('Rezerva stoc comenzi'),
+                                'desc' => "Stocul din magazin va fi echivalentul stocului din Oblio, minus comenzile din ultimele 30 de zile care au un status diferit de 'finalizat'". 
+                                Practic fara comenzile Nefacturate",
+                                'name' => 'oblio_stock',
+                                'values' => array(
+                                    'query' => array(
+                                        array(
+                                            'id'   => 'adjusments',
+                                            'name' => '',
+                                            'val'  => '1'
+                                        ),
+                                    ),
+                                    'id' => 'id',
+                                    'name' => 'name'
+                                ),
+                                //'lang' => true,
+                                'size' => 20,
+                                'required' => false
+                            ),
                             array(
                                 'type' => 'checkbox',
                                 'label' => $this->l('Genereaza proforma automat'),
@@ -672,6 +694,7 @@ class Oblio extends Module
             $oblio_generate_proforma_new_order      = strval(Tools::getValue('oblio_generate_proforma_new_order'));
             $oblio_generate_change_state            = strval(Tools::getValue('oblio_generate_change_state'));
             $oblio_generate_email_state             = strval(Tools::getValue('oblio_generate_email_state'));
+            $oblio_stock_adjusments                 = strval(Tools::getValue('oblio_stock_adjusments'));
 
             // < this will update the value of the Configuration variable >
             Configuration::updateValue('oblio_api_email', $oblio_api_email);
@@ -699,6 +722,7 @@ class Oblio extends Module
             Configuration::updateValue('oblio_generate_proforma_new_order', $oblio_generate_proforma_new_order);
             Configuration::updateValue('oblio_generate_change_state', $oblio_generate_change_state);
             Configuration::updateValue('oblio_generate_email_state', $oblio_generate_email_state);
+	    Configuration::updateValue('oblio_stock_adjusments', $oblio_stock_adjusments);
 
             // < this will display the confirmation message >
             $output .= $this->displayConfirmation($this->l('Modificarea a fost facuta'));
@@ -1388,8 +1412,9 @@ class Oblio extends Module
         $workstation = Configuration::get('oblio_company_workstation');
         $management  = Configuration::get('oblio_company_management');
         $products_type = strval(Configuration::get('oblio_company_products_type'));
+        $oblio_stock_adjusments = (int) Configuration::get('oblio_stock_adjusments');
         
-        if (!$email || !$secret || !$cui) {
+  if (!$email || !$secret || !$cui) {
             return 0;
         }
         
@@ -1401,10 +1426,15 @@ class Oblio extends Module
             $accessTokenHandler = new OblioApiPrestashopAccessTokenHandler();
             $api = new OblioApi($email, $secret, $accessTokenHandler);
             $api->setCif($cui);
-            
+            $ordersQty = [];
+
             $offset = 0;
             $limitPerPage = 250;
             $model = new Oblio_Products();
+
+            if ($oblio_stock_adjusments === 1) {
+                $ordersQty = $model->getOrdersQty();
+            }
             do {
                 if ($offset > 0) {
                     usleep(200000);
@@ -1426,10 +1456,11 @@ class Oblio extends Module
                         continue;
                     }
                     if ($post) {
-                        $model->update($post->id, $product);
+                        $model->update($post->id, $product,$ordersQty);
                     } else {
                         // $model->insert($product);
                     }
+                    
                 }
                 $offset += $limitPerPage; // next page
             } while ($index === $limitPerPage);
