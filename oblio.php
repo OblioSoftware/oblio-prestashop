@@ -1456,7 +1456,7 @@ class Oblio extends Module
                         continue;
                     }
                     if ($post) {
-                        $model->update($post->id, $product,$ordersQty);
+                        $model->update($post->id, $product, $ordersQty);
                     } else {
                         // $model->insert($product);
                     }
