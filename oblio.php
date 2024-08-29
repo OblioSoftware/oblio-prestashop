@@ -562,11 +562,11 @@ class Oblio extends Module
                                 'size' => 20,
                                 'required' => false
                             ),
-				array(
+                            array(
                                 'type' => 'checkbox',
                                 'label' => $this->l('Rezerva stoc comenzi'),
-                                'desc' => "Stocul din magazin va fi echivalentul stocului din Oblio, minus comenzile din ultimele 30 de zile care au un status diferit de 'finalizat'". 
-                                Practic fara comenzile Nefacturate",
+                                'desc' => "Stocul din magazin va fi echivalentul stocului din Oblio, minus comenzile din ultimele 30 de zile care au un status diferit de `finalizat`. <br>
+                                	Practic fara comenzile Nefacturate",
                                 'name' => 'oblio_stock',
                                 'values' => array(
                                     'query' => array(
@@ -1414,7 +1414,7 @@ class Oblio extends Module
         $products_type = strval(Configuration::get('oblio_company_products_type'));
         $oblio_stock_adjusments = (int) Configuration::get('oblio_stock_adjusments');
         
-  if (!$email || !$secret || !$cui) {
+        if (!$email || !$secret || !$cui) {
             return 0;
         }
         
@@ -1456,7 +1456,7 @@ class Oblio extends Module
                         continue;
                     }
                     if ($post) {
-                        $model->update($post->id, $product,$ordersQty);
+                        $model->update($post->id, $product, $ordersQty);
                     } else {
                         // $model->insert($product);
                     }
