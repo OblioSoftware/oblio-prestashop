@@ -80,7 +80,7 @@ class Oblio_Products {
      *  @param array data
      *  @return bool
      */
-    public function update($id_product, $data,$ordersQty = []) {
+    public function update($id_product, $data, $ordersQty = []) {
         if (empty($data['price'])) {
             return false;
         }
@@ -118,7 +118,7 @@ class Oblio_Products {
                 }
             }
         }
-           if (isset($ordersQty[$id_product])) {
+        if (isset($ordersQty[$id_product])) {
             $quantity -= $ordersQty[$id_product];
         }
         // if ($product->update()) {
@@ -285,7 +285,8 @@ class Oblio_Products {
         $code = '_' . sha1(microtime(true) + $id);
         return substr($code, 0, 10);
     }
-     public function getOrdersQty() {
+
+    public function getOrdersQty() {
         $db = Db::getInstance();
 
         $sql = "SELECT od.product_quantity AS qty, od.product_id
