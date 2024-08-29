@@ -563,11 +563,10 @@ class Oblio extends Module
                                 'size' => 20,
                                 'required' => false
                             ),
-			    array(
+			                array(
                                 'type' => 'checkbox',
                                 'label' => $this->l('Rezerva stoc comenzi'),
-                                'desc' => "Stocul din magazin va fi stocul din Oblio minus comenzile din ultimele 30 de zile cu status \"Plata in asteptare\", \"In asteptare\" sau \"In procesare\". 
-                                Practic fara comenzile Nefacturate",
+                                'desc' => "Stocul din magazin va fi echivalentul stocului din Oblio, minus comenzile din ultimele 30 de zile care au un status diferit de 'finalizat'",
                                 'name' => 'oblio_stock',
                                 'values' => array(
                                     'query' => array(
