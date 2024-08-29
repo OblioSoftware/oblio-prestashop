@@ -80,7 +80,7 @@ class Oblio_Products {
      *  @param array data
      *  @return bool
      */
-    public function update($id_product, $data) {
+    public function update($id_product, $data, $ordersQty = []) {
         if (empty($data['price'])) {
             return false;
         }
@@ -117,6 +117,9 @@ class Oblio_Products {
                     break;
                 }
             }
+        }
+        if (isset($ordersQty[$id_product])) {
+            $quantity -= $ordersQty[$id_product];
         }
         // if ($product->update()) {
             StockAvailable::setQuantity((int)$product->id, $combinationId, $quantity, Context::getContext()->shop->id);
@@ -281,5 +284,28 @@ class Oblio_Products {
     public function generateCode($id) {
         $code = '_' . sha1(microtime(true) + $id);
         return substr($code, 0, 10);
+    }
+    
+    public function getOrdersQty() {
+        $db = Db::getInstance();
+
+        $sql = "SELECT od.product_quantity AS qty, od.product_id
+                FROM ps_orders o
+                JOIN ps_order_detail od ON (od.id_order = o.id_order)
+                LEFT JOIN ps_oblio_invoice ob ON (ob.id_order = o.id_order AND ob.type = 1)
+                WHERE o.date_add > DATE_SUB(NOW(), INTERVAL 30 DAY) 
+                AND ob.id_order IS NULL
+                GROUP BY o.id_order";
+
+        $result = $db->executeS($sql);
+        $products = [];
+        foreach ($result as $item) {
+            $item_id = $item['product_id'];
+            if (!isset($products[$item_id])) {
+                $products[$item_id] = 0;
+            }
+            $products[$item_id] += (int) $item['qty'];
+        }
+        return $products;
     }
 }
