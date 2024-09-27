@@ -290,9 +290,9 @@ class Oblio_Products {
         $db = Db::getInstance();
 
         $sql = "SELECT od.product_quantity AS qty, od.product_id
-                FROM ps_orders o
-                JOIN ps_order_detail od ON (od.id_order = o.id_order)
-                LEFT JOIN ps_oblio_invoice ob ON (ob.id_order = o.id_order AND ob.type = 1)
+                FROM `" . _DB_PREFIX_ . "orders` o
+                JOIN `" . _DB_PREFIX_ . "order_detail` od ON (od.id_order = o.id_order)
+                LEFT JOIN `" . _DB_PREFIX_ . "oblio_invoice` ob ON (ob.id_order = o.id_order AND ob.type = 1)
                 WHERE o.date_add > DATE_SUB(NOW(), INTERVAL 30 DAY) 
                 AND ob.id_order IS NULL
                 GROUP BY o.id_order";
