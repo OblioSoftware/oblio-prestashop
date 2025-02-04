@@ -39,7 +39,7 @@ class Oblio extends Module
     {
         $this->name                     = 'oblio';
         $this->tab                      = 'billing_invoicing';
-        $this->version                  = '1.1.7';
+        $this->version                  = '1.1.8';
         $this->author                   = 'Oblio Software';
         $this->need_instance            = 1;
         $this->controllers              = [];
@@ -71,8 +71,12 @@ class Oblio extends Module
             $this->installDb() &&
             $this->installTab() &&
             $this->addOrderState() &&
-            $this->registerHook('displayAdminProductsCombinationBottom') &&
-            $this->registerHook('displayAdminProductsMainStepRightColumnBottom') &&
+            (
+                version_compare(_PS_VERSION_, '8.1') > 0
+                    ? $this->registerHook('displayAdminProductsExtra')
+                    : $this->registerHook('displayAdminProductsCombinationBottom') &&
+                        $this->registerHook('displayAdminProductsMainStepRightColumnBottom')
+            ) &&
             $this->registerHook('actionProductSave') &&
             $this->registerHook('actionValidateOrder') &&
             $this->registerHook('actionPDFInvoiceRender') &&
@@ -869,6 +873,11 @@ class Oblio extends Module
             'oblio_package_number'      => $package_number,
         ]);
         return $this->display(__FILE__, 'views/admin/catalog/product_combinations.tpl');
+    }
+
+    public function hookDisplayAdminProductsExtra(array $data)
+    {
+        return $this->hookDisplayAdminProductsMainStepRightColumnBottom($data);
     }
 
     public function hookDisplayAdminProductsMainStepRightColumnBottom(array $data)
