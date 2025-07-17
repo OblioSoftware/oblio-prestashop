@@ -16,6 +16,36 @@ class Oblio extends Module
     const PROFORMA  = 2;
     
     const PS_OS_NAME = 'PS_OS_OBLIO';
+
+    // public array $tabs = [
+    //     [
+    //         'name' => 'oblio',
+    //         'class_name' => 'AdminOblioInvoice',
+    //         'parent_class_name' => 'AdminCatalog',
+    //         'parent' => -1
+    //     ],
+    //     [
+    //         'name' => 'Sincronizare Oblio',
+    //         'class_name' => 'AdminOblioData',
+    //         'parent_class_name' => 'AdminCatalog',
+    //         'parent' => 9
+    //     ],
+    // ];
+
+    const MODULE_ADMIN_CONTROLLERS = [
+        [
+            'name' => 'Oblio',
+            'class_name' => 'AdminOblioInvoice',
+            'visible' => false,
+            'parent_class_name' => 'AdminCatalog',
+        ],
+        [
+            'name' => 'Sincronizare Oblio',
+            'class_name' => 'AdminOblioData',
+            'visible' => true,
+            'parent_class_name' => 'AdminCatalog',
+        ],
+    ];
     
     private $_tags = [
         'id'            => 'id',
@@ -130,29 +160,31 @@ class Oblio extends Module
     
     private function installTab()
     {
-        $tabs = [
-            [
-                'name' => $this->name,
-                'class' => 'AdminOblioInvoice',
-                'parent' => -1
-            ],
-            [
-                'name' => 'Sincronizare Oblio',
-                'class' => 'AdminOblioData',
-                'parent' => 9
-            ],
-        ];
-        $langs = language::getLanguages();
-        foreach ($tabs as $_tab) {
-            $tab = new Tab();
-            $tab->name = [];
-            foreach ($langs as $lang) {
-                $tab->name[$lang['id_lang']] = $_tab['name'];
+        if (version_compare(_PS_VERSION_, '1.7.8') === -1) { // < 1.7.8
+            $tabs = [
+                [
+                    'name' => $this->name,
+                    'class_name' => 'AdminOblioInvoice',
+                    'parent' => -1
+                ],
+                [
+                    'name' => 'Sincronizare Oblio',
+                    'class_name' => 'AdminOblioData',
+                    'parent' => 9
+                ],
+            ];
+            $langs = language::getLanguages();
+            foreach ($tabs as $_tab) {
+                $tab = new Tab();
+                $tab->name = [];
+                foreach ($langs as $lang) {
+                    $tab->name[$lang['id_lang']] = $_tab['name'];
+                }
+                $tab->module = $this->name;
+                $tab->id_parent = $_tab['parent'];
+                $tab->class_name = $_tab['class_name'];
+                $tab->save();
             }
-            $tab->module = $this->name;
-            $tab->id_parent = $_tab['parent'];
-            $tab->class_name = $_tab['class'];
-            $tab->save();
         }
         return true;
     }
@@ -211,12 +243,14 @@ class Oblio extends Module
     
     private function uninstallTab()
     {
-        $tabs = ['AdminOblioInvoice', 'AdminOblioData'];
-        foreach ($tabs as $tab) {
-            $id_tab = Tab::getIdFromClassName($tab);
-            if ($id_tab) {
-                $tab = new Tab($id_tab);
-                $tab->delete();
+        if (version_compare(_PS_VERSION_, '1.7.8') === -1) { // < 1.7.8
+            $tabs = ['AdminOblioInvoice', 'AdminOblioData'];
+            foreach ($tabs as $tab) {
+                $id_tab = Tab::getIdFromClassName($tab);
+                if ($id_tab) {
+                    $tab = new Tab($id_tab);
+                    $tab->delete();
+                }
             }
         }
         return true;

@@ -1,13 +1,19 @@
 <?php
 
-class AdminOblioData extends ModuleAdminController
+class AdminOblioDataController extends ModuleAdminController
 {
+    /**
+     * @var Oblio
+     */
+    public $module;
+
     public function init()
     {
         parent::init();
         $this->bootstrap = true;
         if (Tools::getValue('action')) {
             $this->ajax = true;
+            $this->json = true;
         }
     }
     

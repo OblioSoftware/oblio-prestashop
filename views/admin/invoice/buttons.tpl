@@ -53,7 +53,7 @@ body.page-is-loading * {cursor:wait!important;}
             jQuery.ajax({
                 method: 'POST',
                 dataType: 'json',
-                url: self.attr('href'),
+                url: self.attr('href') + '&ajax=true',
                 data: postData,
                 success: function(response) {
                     var alert = '';
@@ -95,7 +95,7 @@ body.page-is-loading * {cursor:wait!important;}
             self.addClass('disabled');
             jQuery.ajax({
                 dataType: 'json',
-                url: self.attr('href'),
+                url: self.attr('href') + '&ajax=true',
                 data: {},
                 success: function(response) {
                     var alert = '';

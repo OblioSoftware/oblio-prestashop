@@ -1,7 +1,12 @@
 <?php
 
-class AdminOblioInvoice extends ModuleAdminController
+class AdminOblioInvoiceController extends ModuleAdminController
 {
+    /**
+     * @var Oblio
+     */
+    public $module;
+
     public function init()
     {
         parent::init();

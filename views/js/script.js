@@ -54,6 +54,7 @@
         }
         
         function populateOptions(data, element, fn) {
+            data.ajax = true;
             jQuery.ajax({
                 type: 'post',
                 dataType: 'json',
