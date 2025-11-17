@@ -29,7 +29,7 @@
 
 <div class="panel">
     <div class="panel-heading">Export stoc initial csv</div>
-    <a id="oblio_export" class="btn btn-default" href="{$link->getAdminLink('AdminOblioData')}&amp;action=ajax&amp;type=export">
+    <a id="oblio_export" class="btn btn-default" href="{$link->getAdminLink('AdminOblioData')}&amp;action=ajax&amp;ajax=true&amp;type=export">
       <i class="icon-file"></i>
       Export
     </a>
@@ -37,7 +37,7 @@
 
 <script type="text/javascript">
 "use strict";
-var ajaxLink = "{$link->getAdminLink('AdminOblioData')}&action=ajax";
+var ajaxLink = "{$link->getAdminLink('AdminOblioData')}&action=ajax&ajax=true";
 {literal}
 $(document).ready(function() {
     $('#oblio_update_stock').click(function(e) {

@@ -16,7 +16,7 @@ class Oblio extends Module
     const PROFORMA  = 2;
     
     const PS_OS_NAME = 'PS_OS_OBLIO';
-    
+
     private $_tags = [
         'id'            => 'id',
         'reference'     => 'reference',
@@ -133,12 +133,12 @@ class Oblio extends Module
         $tabs = [
             [
                 'name' => $this->name,
-                'class' => 'AdminOblioInvoice',
+                'class_name' => 'AdminOblioInvoice',
                 'parent' => -1
             ],
             [
                 'name' => 'Sincronizare Oblio',
-                'class' => 'AdminOblioData',
+                'class_name' => 'AdminOblioData',
                 'parent' => 9
             ],
         ];
@@ -151,7 +151,7 @@ class Oblio extends Module
             }
             $tab->module = $this->name;
             $tab->id_parent = $_tab['parent'];
-            $tab->class_name = $_tab['class'];
+            $tab->class_name = $_tab['class_name'];
             $tab->save();
         }
         return true;
